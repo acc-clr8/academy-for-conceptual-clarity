@@ -425,9 +425,44 @@
     document.getElementById("nextBtn").addEventListener("click",()=>{
       if(current<questions.length-1){current++;renderQuestion();return;}
       submitted=true;
-      const score=questions.reduce((s,q,i)=>s+(chosen[i]===q.answer?1:0),0);
-      result.innerHTML=`<div class="test-result">Your score: ${score} / ${questions.length}<br><span style="font-weight:500">${questions.map((q,i)=>`${i+1}. ${chosen[i]===q.answer?"Correct":"Review"} — ${q.explain}`).join("<br>")}</span></div>`;
-      renderQuestion();
+      const attempted = chosen.filter(a => a !== null).length;
+
+const correct = questions.reduce(
+  (count, q, i) => count + (chosen[i] === q.answer ? 1 : 0), 0
+);
+
+const incorrect = attempted - correct;
+const unattempted = questions.length - attempted;
+
+const positiveMarks = correct * 5;
+const negativeMarks = incorrect * 1;
+const finalScore = positiveMarks - negativeMarks;
+
+const percentage = (finalScore / (questions.length * 5)) * 100;
+
+result.innerHTML = `
+<div class="test-result">
+  <h2>ACC Academy - Test Result</h2>
+  <h3>Class 12 – Politics in India Since Independence</h3>
+
+  <p>Total Questions: ${questions.length}</p>
+  <p>Attempted: ${attempted}</p>
+  <p>Unattempted: ${unattempted}</p>
+  <p>Correct Answers: ${correct}</p>
+  <p>Incorrect Answers: ${incorrect}</p>
+
+  <hr>
+
+  <p>Positive Marks: +${positiveMarks}</p>
+  <p>Negative Marks: -${negativeMarks}</p>
+
+  <h2>Final Score: ${finalScore} / ${questions.length * 5}</h2>
+  <h3>Percentage: ${percentage.toFixed(2)}%</h3>
+
+  <p>Marking Scheme: +5 Correct | -1 Incorrect | 0 Unattempted</p>
+</div>
+`;
+renderQuestion();
       document.getElementById("nextBtn").textContent="Test completed";
     });
     document.getElementById("enquiryForm").addEventListener("submit",e=>{
